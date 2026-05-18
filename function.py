@@ -3,6 +3,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 def world_map(Z, names, K_clusters):
+    if K_clusters < 1 or K_clusters > len(names):
+        raise ValueError("K_clusters must be between 1 and the number of countries")
+
     world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 
     world['name'] = world['name'].str.strip()
@@ -13,15 +16,10 @@ def world_map(Z, names, K_clusters):
     n = len(names)
     clusters = {j: [j] for j in range(n)}
 
-    for step in range(n-K_clusters):
-        cluster1 = Z[step][0]
-        cluster2 = Z[step][1]
-
-        # Create new cluster id as n + step
-        new_cluster_id = n + step
-
-        # Merge clusters
-        clusters[new_cluster_id] = clusters.pop(cluster1) + clusters.pop(cluster2)
+    for step in range(n - K_clusters):
+        cluster1 = int(Z[step][0])
+        cluster2 = int(Z[step][1])
+        clusters[n + step] = clusters.pop(cluster1) + clusters.pop(cluster2)
 
     # Assign cluster labels to countries in the world dataset
     for i, value in enumerate(clusters.values()):

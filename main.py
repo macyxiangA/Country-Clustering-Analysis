@@ -16,6 +16,9 @@ def calc_features(row):
     return np.array([float(row[k]) for k in keys], dtype=np.float64)
 
 def hac(features, linkage_type):
+    if linkage_type not in {"single", "complete"}:
+        raise ValueError("linkage_type must be 'single' or 'complete'")
+
     n = len(features)
     Z = np.zeros((n - 1, 4))
     clusters = {i: [i] for i in range(n)}  
@@ -26,7 +29,7 @@ def hac(features, linkage_type):
             D[i, j] = np.linalg.norm(features[i] - features[j])
             D[j, i] = D[i, j]
 
-    next = n 
+    next_cluster = n 
 
     for step in range(n - 1):
         min_dist = np.inf
@@ -50,9 +53,9 @@ def hac(features, linkage_type):
         size_b = len(clusters[b])
         Z[step] = [a, b, min_dist, size_a + size_b]
 
-        clusters[next] = clusters[a] + clusters[b]
+        clusters[next_cluster] = clusters[a] + clusters[b]
         del clusters[a], clusters[b]
-        next += 1
+        next_cluster += 1
 
     return Z
 
@@ -67,7 +70,8 @@ def fig_hac(Z, names):
 def normalize_features(features):
 
     X = np.vstack(features)
-    mean = np.mean(X, axis=0)             # μ ∈ R^9
-    std  = np.std(X,  axis=0, ddof=0)     # σ ∈ R^9
+    mean = np.mean(X, axis=0)
+    std  = np.std(X,  axis=0, ddof=0)
+    std[std == 0] = 1.0
     Xn = (X - mean) / std
     return [Xn[i] for i in range(Xn.shape[0])]

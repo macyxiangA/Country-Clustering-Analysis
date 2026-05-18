@@ -23,18 +23,18 @@ The code provides:
 
 You can install the required packages with:
 
-    pip install numpy scipy matplotlib geopandas
+    pip install -r requirements.txt
 
 ## Files
 
-- clustering.py — main implementation file containing:
+- main.py — clustering implementation containing:
   - load_data
   - calc_features
   - normalize_features
   - hac
   - fig_hac
-  - world_map
-- countries.csv — input data file (not included)
+- function.py — world map visualization helper
+- Country-data.csv — input dataset
 - README.md
 
 ## Data Format
@@ -60,7 +60,7 @@ Each row corresponds to one country and its numeric attributes.
 
 Example for reading the CSV and building the feature matrix:
 
-    from clustering import load_data, calc_features, normalize_features
+    from main import load_data, calc_features, normalize_features
 
     rows = load_data("countries.csv")
     features = [calc_features(r) for r in rows]
@@ -72,7 +72,7 @@ Example for reading the CSV and building the feature matrix:
 
 You can choose either "single" or "complete" linkage:
 
-    from clustering import hac
+    from main import hac
 
     Z = hac(features_norm, linkage_type="single")
     # or:
@@ -82,7 +82,7 @@ The function returns a linkage matrix Z of shape (n-1, 4), following the SciPy c
 
 ### 3. Plot the dendrogram
 
-    from clustering import fig_hac
+    from main import fig_hac
     import matplotlib.pyplot as plt
 
     fig = fig_hac(Z, names)
@@ -94,7 +94,7 @@ This will display a dendrogram with country names on the x-axis.
 
 To display the clusters geographically, choose a target number of clusters K and call:
 
-    from clustering import world_map
+    from function import world_map
 
     K_clusters = 5
     world_map(Z, names, K_clusters)
